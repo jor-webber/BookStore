@@ -65,7 +65,7 @@ namespace BookStore.Data
                 LastName = "Admin",
                 EmailConfirmed = true
             };
-            var result = await userManager.CreateAsync(adminUser, appSecrets.AdminPassword);
+            var result = await userManager.CreateAsync(adminUser, "Password!1");
             if (!result.Succeeded)
                 return 1;  // should log an error message here
 
@@ -88,7 +88,7 @@ namespace BookStore.Data
                 LastName = "Member",
                 EmailConfirmed = true
             };
-            result = await userManager.CreateAsync(memberUser, appSecrets.MemberPassword);
+            result = await userManager.CreateAsync(memberUser, "Password!1");
             if (!result.Succeeded)
                 return 3;  // should log an error message here
 

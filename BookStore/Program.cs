@@ -27,19 +27,18 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new EmailDomainRequirement("mohawkcollege.ca"));
     });
 });
+
 builder.Services.AddSingleton<IAuthorizationHandler, EmailDomainHandler>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
 var configuration = app.Services.GetService<IConfiguration>();
-var hosting = app.Services.GetService<IWebHostEnvironment>();
 
-if (hosting.IsDevelopment())
-{
-    var secrets = configuration.GetSection("Secrets").Get<AppSecrets>();
-    DbInitializer.appSecrets = secrets;
-}
+
+var secrets = configuration?.GetSection("Secrets").Get<AppSecrets>();
+DbInitializer.appSecrets = secrets;
+
 
 using (var scope = app.Services.CreateScope())
 {
@@ -60,6 +59,15 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+    context.Response.Headers.Add("X-Xss-Protection", "1");
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Add("Content-Security-Policy", "self");
+    await next();
+});
 
 app.UseRouting();
 

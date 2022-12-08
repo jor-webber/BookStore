@@ -15,10 +15,12 @@ namespace BookStore.Controllers
     public class BooksController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<BooksController> _logger;
 
-        public BooksController(ApplicationDbContext context)
+        public BooksController(ApplicationDbContext context, ILogger<BooksController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: Books
@@ -41,7 +43,7 @@ namespace BookStore.Controllers
             {
                 return NotFound();
             }
-
+            _logger.LogInformation($"Retrived book with id: {id}");
             return View(book);
         }
 
@@ -66,6 +68,7 @@ namespace BookStore.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            _logger.LogInformation($"Created book with id: {book.Id}");
             return View(book);
         }
 
